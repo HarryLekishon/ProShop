@@ -10,7 +10,7 @@ function CartScreen() {
   const idObject = useParams();
 
 
-  const productId = idObject.id.split('qty=')[0];
+  const productId = idObject.id
 
   const location = useLocation();
   const history = useNavigate();
@@ -36,7 +36,7 @@ function CartScreen() {
   }
 
   const checkoutHandler = () => {
-    history('/login?redirect=shipping')
+    history('/login/?redirect=/shipping')
   }
 
   return (
