@@ -6,6 +6,7 @@ import Message from '../components/Message'
 import Loader from '../components/Loader'
 import { getUserDetails, updateUserProfile } from '../actions/userActions'
 import { login } from '../actions/userActions'
+import { listMyOrders } from '../actions/orderActions'
 
 function ProfileScreen() {
     const [name, setName] = useState('')
@@ -28,12 +29,16 @@ function ProfileScreen() {
     const userUpdateProfile = useSelector(state => state.userUpdateProfile)
     const { success} = userUpdateProfile
 
+    const orderListMy = useSelector(state => state.orderListMy)
+    const { loading:loadingOrders, error:errorOrders, orders} = orderListMy
+
     useEffect(() => {
         if(!userInfo){
             history('/login')
         }else{
             if(!user.name){
                 dispatch(getUserDetails('profile'))
+                dispatch(listMyOrders())
             }else {
                 
                 setName(user.name)
@@ -113,6 +118,21 @@ function ProfileScreen() {
         </Col>
         <Col md={9}>
             <h2>My orders</h2>
+            {/* {loadingOrders ? <Loader/> : errorOrders ? <Message variant='danger'>
+            {errorOrders}</Message> : (
+                <Table stripped borded hover responsive className='table-sm'>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>DATE</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                </Table>
+            )
+            } */}
         </Col>
     </Row>
   )

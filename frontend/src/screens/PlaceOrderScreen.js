@@ -1,14 +1,18 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import CheckOutSteps from '../components/CheckOutSteps'
 import { Form, Button, Col,  ListGroup, Image, Card, Row, ListGroupItem } from 'react-bootstrap'
 import FormContainer from '../components/FormContainer'
 import Message from '../components/Message'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { createOrder } from '../actions/orderActions'
 
 function PlaceOrderScreen() {
 
+  const dispatch = useDispatch()
   const cart = useSelector(state => state.cart )
+  const history = useNavigate();
+  cart.paymentMethod = "paypal";
 
   //calc prices
   const addDecimals = (num) => {
@@ -29,9 +33,28 @@ function PlaceOrderScreen() {
     ).toFixed(2)
 
 
-  
+  const orderCreate = useSelector(state => state.orderCreate)
+  const { order, success, error} = orderCreate
+
+  useEffect(() => {
+    if(success) {
+      history(`/order/${order._id}`)
+    }
+    // eslint-disable-next-line
+  }, [history, success])
+
   const placeOrderHandler = () => {
-    console.log('Order Placed')
+    dispatch(createOrder({
+      orderItems: cart.cartItems,
+      shippingAddress: cart.shippingAddress,
+      paymentMethod: cart.paymentMethod,
+      itemsPrice: cart.itemsPrice,
+      shippingPrice: cart.shippingPrice,
+      taxPrice:cart.taxPrice,
+      totalPrice: cart.totalPrice,
+
+
+    }))
   }
   return (
     <>
@@ -112,6 +135,9 @@ function PlaceOrderScreen() {
                 </Row>
               </ListGroup.Item>
 
+              <ListGroup.Item>
+                {error && <Message variant='danger'>{error}</Message>}
+              </ListGroup.Item>
               <ListGroup.Item>
                 <Button type='button' className='btn-block' disabled={cart.
                   cartItems === 0} onClick={placeOrderHandler}>Place Order</Button>
